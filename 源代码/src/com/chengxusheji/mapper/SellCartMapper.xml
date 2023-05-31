@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.SellCartMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加销售购物车记录 -->
+	<insert id="addSellCart" parameterType="sellCart">
+		insert into t_sellCart(employeeObj,productObj,productCount) values 
+		(#{employeeObj.employeeNo},#{productObj.productId},#{productCount})
+	</insert>
+
+	<!-- 按照查询条件分页查询销售购物车记录 -->
+	<select id="querySellCart" resultMap="sellCartMap" >
+		select t_sellCart.* from t_sellCart,t_employee,t_product ${where} and t_sellCart.employeeObj = t_employee.employeeNo and t_sellCart.productObj = t_product.productId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="sellCartMap" type="sellCart">
+        <id property="sellCartId" column="sellCartId" />
+        <association property="employeeObj" column="employeeObj" select="com.chengxusheji.mapper.EmployeeMapper.getEmployee" />
+        <association property="productObj" column="productObj" select="com.chengxusheji.mapper.ProductMapper.getProduct" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有销售购物车记录 -->
+	<select id="querySellCartList" resultMap="sellCartMap" >
+		select t_sellCart.* from t_sellCart,t_employee,t_product ${where} and t_sellCart.employeeObj = t_employee.employeeNo and t_sellCart.productObj = t_product.productId
+	</select>
+
+    <!-- 按照查询条件的销售购物车记录数 -->
+	<select id="querySellCartCount" resultType="int">
+		select count(*) from t_sellCart,t_employee,t_product ${where} and t_sellCart.employeeObj = t_employee.employeeNo and t_sellCart.productObj = t_product.productId
+	</select>
+
+	<!-- 根据主键查询某个销售购物车记录 -->
+	<select id="getSellCart" parameterType="int" resultMap="sellCartMap">
+		select * from t_sellCart where t_sellCart.sellCartId = #{sellCartId}
+	</select>
+
+	<!-- 更新销售购物车记录 -->
+	<update id="updateSellCart" parameterType="sellCart">
+		update t_sellCart set employeeObj=#{employeeObj.employeeNo},productObj=#{productObj.productId},productCount=#{productCount} where sellCartId = #{sellCartId}
+	</update>
+
+	<!-- 删除销售购物车记录 -->
+	<delete id="deleteSellCart" parameterType="int">
+		delete from t_sellCart where sellCartId=#{sellCartId}
+	</delete>
+
+</mapper>

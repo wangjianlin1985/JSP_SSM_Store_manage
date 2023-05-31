@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ZiliaoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加资料文件记录 -->
+	<insert id="addZiliao" parameterType="ziliao">
+		insert into t_ziliao(title,content,ziliaoFile,addTime) values 
+		(#{title},#{content},#{ziliaoFile},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询资料文件记录 -->
+	<select id="queryZiliao" resultMap="ziliaoMap" >
+		select t_ziliao.* from t_ziliao ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="ziliaoMap" type="ziliao">
+        <id property="ziliaoId" column="ziliaoId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有资料文件记录 -->
+	<select id="queryZiliaoList" resultMap="ziliaoMap" >
+		select t_ziliao.* from t_ziliao ${where}
+	</select>
+
+    <!-- 按照查询条件的资料文件记录数 -->
+	<select id="queryZiliaoCount" resultType="int">
+		select count(*) from t_ziliao ${where}
+	</select>
+
+	<!-- 根据主键查询某个资料文件记录 -->
+	<select id="getZiliao" parameterType="int" resultMap="ziliaoMap">
+		select * from t_ziliao where t_ziliao.ziliaoId = #{ziliaoId}
+	</select>
+
+	<!-- 更新资料文件记录 -->
+	<update id="updateZiliao" parameterType="ziliao">
+		update t_ziliao set title=#{title},content=#{content},ziliaoFile=#{ziliaoFile},addTime=#{addTime} where ziliaoId = #{ziliaoId}
+	</update>
+
+	<!-- 删除资料文件记录 -->
+	<delete id="deleteZiliao" parameterType="int">
+		delete from t_ziliao where ziliaoId=#{ziliaoId}
+	</delete>
+
+</mapper>

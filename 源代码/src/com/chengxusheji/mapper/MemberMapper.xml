@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.MemberMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加会员记录 -->
+	<insert id="addMember" parameterType="member">
+		insert into t_member(memberUserName,name,gender,birthDate,telephone,address,memberMemo) values 
+		(#{memberUserName},#{name},#{gender},#{birthDate},#{telephone},#{address},#{memberMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询会员记录 -->
+	<select id="queryMember" resultMap="memberMap" >
+		select t_member.* from t_member ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="memberMap" type="member">
+        <id property="memberUserName" column="memberUserName" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有会员记录 -->
+	<select id="queryMemberList" resultMap="memberMap" >
+		select t_member.* from t_member ${where}
+	</select>
+
+    <!-- 按照查询条件的会员记录数 -->
+	<select id="queryMemberCount" resultType="int">
+		select count(*) from t_member ${where}
+	</select>
+
+	<!-- 根据主键查询某个会员记录 -->
+	<select id="getMember" parameterType="string" resultMap="memberMap">
+		select * from t_member where t_member.memberUserName = #{memberUserName}
+	</select>
+
+	<!-- 更新会员记录 -->
+	<update id="updateMember" parameterType="member">
+		update t_member set name=#{name},gender=#{gender},birthDate=#{birthDate},telephone=#{telephone},address=#{address},memberMemo=#{memberMemo} where memberUserName = #{memberUserName}
+	</update>
+
+	<!-- 删除会员记录 -->
+	<delete id="deleteMember" parameterType="string">
+		delete from t_member where memberUserName=#{memberUserName}
+	</delete>
+
+</mapper>

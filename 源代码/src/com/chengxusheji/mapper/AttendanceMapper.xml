@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.AttendanceMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加考勤记录 -->
+	<insert id="addAttendance" parameterType="attendance">
+		insert into t_attendance(attendanceDate,employeeObj,attendanceStateObj,attendanceMemo) values 
+		(#{attendanceDate},#{employeeObj.employeeNo},#{attendanceStateObj.stateId},#{attendanceMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询考勤记录 -->
+	<select id="queryAttendance" resultMap="attendanceMap" >
+		select t_attendance.* from t_attendance,t_attendanceState,t_employee ${where} and t_attendance.employeeObj = t_employee.employeeNo and t_attendance.attendanceStateObj = t_attendanceState.stateId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="attendanceMap" type="attendance">
+        <id property="attendanceId" column="attendanceId" />
+        <association property="employeeObj" column="employeeObj" select="com.chengxusheji.mapper.EmployeeMapper.getEmployee" />
+        <association property="attendanceStateObj" column="attendanceStateObj" select="com.chengxusheji.mapper.AttendanceStateMapper.getAttendanceState" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有考勤记录 -->
+	<select id="queryAttendanceList" resultMap="attendanceMap" >
+		select t_attendance.* from t_attendance,t_attendanceState,t_employee ${where} and t_attendance.employeeObj = t_employee.employeeNo and t_attendance.attendanceStateObj = t_attendanceState.stateId
+	</select>
+
+    <!-- 按照查询条件的考勤记录数 -->
+	<select id="queryAttendanceCount" resultType="int">
+		select count(*) from t_attendance,t_attendanceState,t_employee ${where} and t_attendance.employeeObj = t_employee.employeeNo and t_attendance.attendanceStateObj = t_attendanceState.stateId
+	</select>
+
+	<!-- 根据主键查询某个考勤记录 -->
+	<select id="getAttendance" parameterType="int" resultMap="attendanceMap">
+		select * from t_attendance where t_attendance.attendanceId = #{attendanceId}
+	</select>
+
+	<!-- 更新考勤记录 -->
+	<update id="updateAttendance" parameterType="attendance">
+		update t_attendance set attendanceDate=#{attendanceDate},employeeObj=#{employeeObj.employeeNo},attendanceStateObj=#{attendanceStateObj.stateId},attendanceMemo=#{attendanceMemo} where attendanceId = #{attendanceId}
+	</update>
+
+	<!-- 删除考勤记录 -->
+	<delete id="deleteAttendance" parameterType="int">
+		delete from t_attendance where attendanceId=#{attendanceId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.LostProductMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加丢失物品记录 -->
+	<insert id="addLostProduct" parameterType="lostProduct">
+		insert into t_lostProduct(productObj,lostNumber,lostTime,lostPlace,productMoney,employeeObj) values 
+		(#{productObj.productId},#{lostNumber},#{lostTime},#{lostPlace},#{productMoney},#{employeeObj.employeeNo})
+	</insert>
+
+	<!-- 按照查询条件分页查询丢失物品记录 -->
+	<select id="queryLostProduct" resultMap="lostProductMap" >
+		select t_lostProduct.* from t_lostProduct,t_employee,t_product ${where} and t_lostProduct.productObj = t_product.productId and t_lostProduct.employeeObj = t_employee.employeeNo limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="lostProductMap" type="lostProduct">
+        <id property="lostId" column="lostId" />
+        <association property="productObj" column="productObj" select="com.chengxusheji.mapper.ProductMapper.getProduct" />
+        <association property="employeeObj" column="employeeObj" select="com.chengxusheji.mapper.EmployeeMapper.getEmployee" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有丢失物品记录 -->
+	<select id="queryLostProductList" resultMap="lostProductMap" >
+		select t_lostProduct.* from t_lostProduct,t_employee,t_product ${where} and t_lostProduct.productObj = t_product.productId and t_lostProduct.employeeObj = t_employee.employeeNo
+	</select>
+
+    <!-- 按照查询条件的丢失物品记录数 -->
+	<select id="queryLostProductCount" resultType="int">
+		select count(*) from t_lostProduct,t_employee,t_product ${where} and t_lostProduct.productObj = t_product.productId and t_lostProduct.employeeObj = t_employee.employeeNo
+	</select>
+
+	<!-- 根据主键查询某个丢失物品记录 -->
+	<select id="getLostProduct" parameterType="int" resultMap="lostProductMap">
+		select * from t_lostProduct where t_lostProduct.lostId = #{lostId}
+	</select>
+
+	<!-- 更新丢失物品记录 -->
+	<update id="updateLostProduct" parameterType="lostProduct">
+		update t_lostProduct set productObj=#{productObj.productId},lostNumber=#{lostNumber},lostTime=#{lostTime},lostPlace=#{lostPlace},productMoney=#{productMoney},employeeObj=#{employeeObj.employeeNo} where lostId = #{lostId}
+	</update>
+
+	<!-- 删除丢失物品记录 -->
+	<delete id="deleteLostProduct" parameterType="int">
+		delete from t_lostProduct where lostId=#{lostId}
+	</delete>
+
+</mapper>

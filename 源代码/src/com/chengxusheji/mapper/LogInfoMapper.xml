@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.LogInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加系统日志记录 -->
+	<insert id="addLogInfo" parameterType="logInfo">
+		insert into t_logInfo(logType,logContent,logTime) values 
+		(#{logType},#{logContent},#{logTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询系统日志记录 -->
+	<select id="queryLogInfo" resultMap="logInfoMap" >
+		select t_logInfo.* from t_logInfo ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="logInfoMap" type="logInfo">
+        <id property="logId" column="logId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有系统日志记录 -->
+	<select id="queryLogInfoList" resultMap="logInfoMap" >
+		select t_logInfo.* from t_logInfo ${where}
+	</select>
+
+    <!-- 按照查询条件的系统日志记录数 -->
+	<select id="queryLogInfoCount" resultType="int">
+		select count(*) from t_logInfo ${where}
+	</select>
+
+	<!-- 根据主键查询某个系统日志记录 -->
+	<select id="getLogInfo" parameterType="int" resultMap="logInfoMap">
+		select * from t_logInfo where t_logInfo.logId = #{logId}
+	</select>
+
+	<!-- 更新系统日志记录 -->
+	<update id="updateLogInfo" parameterType="logInfo">
+		update t_logInfo set logType=#{logType},logContent=#{logContent},logTime=#{logTime} where logId = #{logId}
+	</update>
+
+	<!-- 删除系统日志记录 -->
+	<delete id="deleteLogInfo" parameterType="int">
+		delete from t_logInfo where logId=#{logId}
+	</delete>
+
+</mapper>
